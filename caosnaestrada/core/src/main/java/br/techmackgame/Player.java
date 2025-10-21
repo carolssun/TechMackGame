@@ -34,39 +34,42 @@ public class Player extends GameObject{
         float speed = 4f;
         float worldWidth = viewport.getWorldWidth();
         float worldHeight = viewport.getWorldHeight();
-        float spaceshipWidth = objectSprite.getWidth();
-        float spaceshipHeight = objectSprite.getHeight();
+        float playerWidth = objectSprite.getWidth();
+        float playerHeight = objectSprite.getHeight();
 
-        // Andar direita 
+        // Movimento teclado
             if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
                 objectSprite.translateX(speed * delta); // mover para a direita
-                // ao mover para a direita, usar a textura de standingRight
-                // criar array com os 4 frames existentes e montar Animation (mínima alteração ao código atual)
-                TextureRegion[] framesCorrida = new TextureRegion[4];
-                for (int i = 0; i < framesCorrida.length; i++){
+                
+                TextureRegion[] framesCorridaDireita = new TextureRegion[4];  // ao mover para a direita, usar a textura de standingRight
+               
+                for (int i = 0; i < framesCorridaDireita.length; i++){
                     Texture t = new Texture("RunRight" + (i+1) + ".png");
-                    framesCorrida[i] = new TextureRegion(t);
+                    framesCorridaDireita[i] = new TextureRegion(t);
                 }
-                runAnimationRight = new Animation<>(0.1f, framesCorrida);
+
+                runAnimationRight = new Animation<>(0.1f, framesCorridaDireita);
                 // avançar tempo da animação e pegar frame atual
                 stateTime += delta;
                 frameAtual = runAnimationRight.getKeyFrame(stateTime, true);
                 objectSprite.setRegion(frameAtual);
 
-                // if (objectSprite.getTexture() != standingRight) {
-                //     objectSprite.setRegion(standingRight);
-                //     objectSprite.setSize(objectSprite.getWidth(), objectSprite.getHeight());
-                // }
-
             } else if(Gdx.input.isKeyPressed(Input.Keys.LEFT)){
                 objectSprite.translateX(-speed * delta); // mover para a esquerda
-                // ao mover para a esquerda, usar a textura de standingLeft
-                if (objectSprite.getTexture() != standingLeft) {
-                    objectSprite.setRegion(standingLeft);
-                    objectSprite.setSize(objectSprite.getWidth(), objectSprite.getHeight());
+
+                TextureRegion[] framesCorridaEsquerda = new TextureRegion[4];  // ao mover para a direita, usar a textura de standingRight
+               
+                for (int i = 0; i < framesCorridaEsquerda.length; i++){
+                    Texture t = new Texture("RunLeft" + (i+1) + ".png");
+                    framesCorridaEsquerda[i] = new TextureRegion(t);
                 }
-                // resetar tempo de animação quando não estiver correndo para a direita
-                stateTime = 0f;
+
+                runAnimationLeft = new Animation<>(0.1f, framesCorridaEsquerda);
+                // avançar tempo da animação e pegar frame atual
+                stateTime += delta;
+                frameAtual = runAnimationRight.getKeyFrame(stateTime, true);
+                objectSprite.setRegion(frameAtual);
+
             } 
 
             // Movimento via toque ou mouse
@@ -78,8 +81,8 @@ public class Player extends GameObject{
             }
 
             // Garante que o jogador não saia da tela
-            objectSprite.setX(MathUtils.clamp(objectSprite.getX(), 0, worldWidth - spaceshipWidth));
-            objectSprite.setY(MathUtils.clamp(objectSprite.getY(), 0, worldHeight - spaceshipHeight));
+            objectSprite.setX(MathUtils.clamp(objectSprite.getX(), 0, worldWidth - playerWidth));
+            objectSprite.setY(MathUtils.clamp(objectSprite.getY(), 0, worldHeight - playerHeight));
     }
 }
 
