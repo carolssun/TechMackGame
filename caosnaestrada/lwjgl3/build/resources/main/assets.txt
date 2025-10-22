@@ -1,0 +1,17 @@
+.gitkeep
+RunLeft1.png
+RunLeft2.png
+RunLeft3.png
+RunLeft4.png
+RunRight1.png
+RunRight2.png
+RunRight3.png
+RunRight4.png
+abajur.png
+brinquedos.png
+caminhao.png
+notebook.png
+roupas.png
+standingLeft.png
+standingRight.png
+travesseiro.png
