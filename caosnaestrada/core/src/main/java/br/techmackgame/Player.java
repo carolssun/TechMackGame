@@ -21,7 +21,6 @@ public class Player extends GameObject{
     TextureRegion frameAtual;
     private float stateTime = 0f;
     private TextureRegion[] framesCorridaDireita;
-    private TextureRegion[] framesCorridaEsquerda; // Array para animação de correr para esquerda
 
     public Player(Texture texture, float x, float y, float width, float height, Viewport viewport) {
         super(texture, x, y, width, height);
@@ -33,24 +32,18 @@ public class Player extends GameObject{
         // Carregar frames da animação de correr para direita
         framesCorridaDireita = new TextureRegion[15];
         for (int i = 0; i < 15; i++) {
-            String filename = "RunRight" + (i+1) + ".png";
-            System.out.println("Carregando imagem: " + filename);
-            Texture t = new Texture(filename);
+                Texture t = new Texture("RunRight" + (i+1) + ".png");
             framesCorridaDireita[i] = new TextureRegion(t);
         }
-        System.out.println("Animação direita criada com " + framesCorridaDireita.length + " frames");
         runAnimationRight = new Animation<>(0.05f, framesCorridaDireita);
         
-        // Carregar frames da animação de correr para esquerda
-        framesCorridaEsquerda = new TextureRegion[15];
+        // Para a esquerda, vamos usar os mesmos frames da direita mas invertidos horizontalmente
+        TextureRegion[] framesEsquerda = new TextureRegion[15];
         for (int i = 0; i < 15; i++) {
-            String filename = "RunLeft" + (i+1) + ".png";
-            System.out.println("Carregando imagem: " + filename);
-            Texture t = new Texture(filename);
-            framesCorridaEsquerda[i] = new TextureRegion(t);
+            framesEsquerda[i] = new TextureRegion(framesCorridaDireita[i]);
+            framesEsquerda[i].flip(true, false); // Inverte horizontalmente
         }
-        System.out.println("Animação esquerda criada com " + framesCorridaEsquerda.length + " frames");
-        runAnimationLeft = new Animation<>(0.05f, framesCorridaEsquerda);
+        runAnimationLeft = new Animation<>(0.05f, framesEsquerda);
     }
 
     @Override
@@ -67,12 +60,10 @@ public class Player extends GameObject{
             objectSprite.translateX(speed * delta); // mover para a direita
             frameAtual = runAnimationRight.getKeyFrame(stateTime, true);
             objectSprite.setRegion(frameAtual);
-            System.out.println("Animando frame direita: " + frameAtual); // Debug
         } else if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
             objectSprite.translateX(-speed * delta); // mover para a esquerda
             frameAtual = runAnimationLeft.getKeyFrame(stateTime, true);
             objectSprite.setRegion(frameAtual);
-            System.out.println("Animando frame esquerda: " + frameAtual); // Debug
         }
 
             // Movimento via toque ou mouse
