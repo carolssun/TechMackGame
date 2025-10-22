@@ -20,13 +20,37 @@ public class Player extends GameObject{
     private Animation<TextureRegion> runAnimationRight;
     TextureRegion frameAtual;
     private float stateTime = 0f;
+    private TextureRegion[] framesCorridaDireita;
+    private TextureRegion[] framesCorridaEsquerda; // Array para animação de correr para esquerda
 
     public Player(Texture texture, float x, float y, float width, float height, Viewport viewport) {
         super(texture, x, y, width, height);
         this.viewport = viewport;
         this.touchPos = new Vector2();
-        this.standingRight = texture; // Por padrão, personagem parado pra direita
+        this.standingRight = texture;
         this.standingLeft = texture;
+        
+        // Carregar frames da animação de correr para direita
+        framesCorridaDireita = new TextureRegion[15];
+        for (int i = 0; i < 15; i++) {
+            String filename = "RunRight" + (i+1) + ".png";
+            System.out.println("Carregando imagem: " + filename);
+            Texture t = new Texture(filename);
+            framesCorridaDireita[i] = new TextureRegion(t);
+        }
+        System.out.println("Animação direita criada com " + framesCorridaDireita.length + " frames");
+        runAnimationRight = new Animation<>(0.05f, framesCorridaDireita);
+        
+        // Carregar frames da animação de correr para esquerda
+        framesCorridaEsquerda = new TextureRegion[15];
+        for (int i = 0; i < 15; i++) {
+            String filename = "RunLeft" + (i+1) + ".png";
+            System.out.println("Carregando imagem: " + filename);
+            Texture t = new Texture(filename);
+            framesCorridaEsquerda[i] = new TextureRegion(t);
+        }
+        System.out.println("Animação esquerda criada com " + framesCorridaEsquerda.length + " frames");
+        runAnimationLeft = new Animation<>(0.05f, framesCorridaEsquerda);
     }
 
     @Override
@@ -37,40 +61,19 @@ public class Player extends GameObject{
         float playerWidth = objectSprite.getWidth();
         float playerHeight = objectSprite.getHeight();
 
-        // Movimento teclado
-            if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)){
-                objectSprite.translateX(speed * delta); // mover para a direita
-                
-                TextureRegion[] framesCorridaDireita = new TextureRegion[4];  // ao mover para a direita, usar a textura de standingRight
-               
-                for (int i = 0; i < framesCorridaDireita.length; i++){
-                    Texture t = new Texture("RunRight" + (i+1) + ".png");
-                    framesCorridaDireita[i] = new TextureRegion(t);
-                }
+        stateTime += delta; // Avança o tempo da animação
 
-                runAnimationRight = new Animation<>(0.1f, framesCorridaDireita);
-                // avançar tempo da animação e pegar frame atual
-                stateTime += delta;
-                frameAtual = runAnimationRight.getKeyFrame(stateTime, true);
-                objectSprite.setRegion(frameAtual);
-
-            } else if(Gdx.input.isKeyPressed(Input.Keys.LEFT)){
-                objectSprite.translateX(-speed * delta); // mover para a esquerda
-
-                TextureRegion[] framesCorridaEsquerda = new TextureRegion[4];  // ao mover para a direita, usar a textura de standingRight
-               
-                for (int i = 0; i < framesCorridaEsquerda.length; i++){
-                    Texture t = new Texture("RunLeft" + (i+1) + ".png");
-                    framesCorridaEsquerda[i] = new TextureRegion(t);
-                }
-
-                runAnimationLeft = new Animation<>(0.1f, framesCorridaEsquerda);
-                // avançar tempo da animação e pegar frame atual
-                stateTime += delta;
-                frameAtual = runAnimationRight.getKeyFrame(stateTime, true);
-                objectSprite.setRegion(frameAtual);
-
-            } 
+        if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            objectSprite.translateX(speed * delta); // mover para a direita
+            frameAtual = runAnimationRight.getKeyFrame(stateTime, true);
+            objectSprite.setRegion(frameAtual);
+            System.out.println("Animando frame direita: " + frameAtual); // Debug
+        } else if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            objectSprite.translateX(-speed * delta); // mover para a esquerda
+            frameAtual = runAnimationLeft.getKeyFrame(stateTime, true);
+            objectSprite.setRegion(frameAtual);
+            System.out.println("Animando frame esquerda: " + frameAtual); // Debug
+        }
 
             // Movimento via toque ou mouse
             if (Gdx.input.isTouched()) {
