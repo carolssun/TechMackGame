@@ -5,6 +5,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ScreenUtils;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -16,6 +18,11 @@ public class Main implements ApplicationListener {
     Player player;
     Truck truck;
 
+    Array<Texture> objectTextures;
+    FallingObject fallingObject;
+    float spawnTimer = 0f;
+    float spawnInterval = 3f;
+
     @Override
     public void create() {
         spriteBatch = new SpriteBatch();
@@ -25,14 +32,21 @@ public class Main implements ApplicationListener {
         Texture playerTexture = new Texture("standingRight.png");
         player = new Player(playerTexture, 1, 1, 0.5f, 1f, viewport);
 
-        // Caminhão - parado no canto direito
-        Texture truckTexture = new Texture("caminhao.png"); // 1 frame por enquanto
-        float truckWidth = 4f;  // largura em unidades do mundo
-        float truckHeight = 2f; // altura em unidades
-        float truckX = viewport.getWorldWidth() - truckWidth / 2; // metade aparece
+        // Caminhão
+        Texture truckTexture = new Texture("caminhao.png");
+        float truckWidth = 4f;
+        float truckHeight = 2f;
+        float truckX = viewport.getWorldWidth() - truckWidth / 2;
         float truckY = 1f;
-
         truck = new Truck(truckTexture, truckX, truckY, truckWidth, truckHeight);
+
+        // Objetos aleatórios (cada um é uma imagem separada)
+        objectTextures = new Array<>();
+        objectTextures.add(new Texture("abajur.png"));
+        objectTextures.add(new Texture("brinquedos.png"));
+        objectTextures.add(new Texture("notebook.png"));
+        objectTextures.add(new Texture("roupas.png"));
+        objectTextures.add(new Texture("travesseiro.png"));
     }
 
     @Override
@@ -52,13 +66,35 @@ public class Main implements ApplicationListener {
         player.update(delta);
         truck.update(delta);
 
-        // Colisão simples: impede que o player entre no caminhão
+        // Impede o player de entrar no caminhão
         if (player.getBounds().overlaps(truck.getBounds())) {
-            // Se estiver à esquerda do caminhão, empurra para trás
             if (player.getX() < truck.getX()) {
                 player.setPosition(truck.getX() - player.getWidth(), player.getY());
-            } else { // se estiver à direita, empurra para frente
+            } else {
                 player.setPosition(truck.getX() + truck.getWidth(), player.getY());
+            }
+        }
+
+        // Controle de spawn de objetos
+        spawnTimer += delta;
+        if ((fallingObject == null || !fallingObject.isActive()) && spawnTimer > spawnInterval) {
+            spawnTimer = 0f;
+            spawnInterval = MathUtils.random(2f, 5f);
+
+            Texture randomTexture = objectTextures.random();
+            float startX = truck.getX(); // sai da traseira do caminhão
+            float startY = truck.getY() + truck.getHeight();
+
+            fallingObject = new FallingObject(randomTexture, startX, startY, 0.5f, 0.5f);
+        }
+
+        // Atualiza e verifica colisão com o player
+        if (fallingObject != null) {
+            fallingObject.update(delta);
+
+            if (fallingObject.isActive() && player.getBounds().overlaps(fallingObject.getBounds())) {
+                fallingObject.collect();
+                System.out.println("🎯 Player pegou o objeto!");
             }
         }
     }
@@ -71,17 +107,16 @@ public class Main implements ApplicationListener {
         spriteBatch.begin();
         player.draw(spriteBatch);
         truck.draw(spriteBatch);
+        if (fallingObject != null) fallingObject.draw(spriteBatch);
         spriteBatch.end();
     }
 
-    @Override
-    public void pause() { }
-
-    @Override
-    public void resume() { }
+    @Override public void pause() { }
+    @Override public void resume() { }
 
     @Override
     public void dispose() {
         spriteBatch.dispose();
+        for (Texture t : objectTextures) t.dispose();
     }
 }
