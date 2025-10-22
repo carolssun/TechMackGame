@@ -11,6 +11,7 @@ public class FallingObject extends GameObject {
     private float gravity = -9.8f; // aceleração para baixo
     private boolean active = true;
     private float groundY = 1f; // altura do chão (ajuste conforme o seu cenário)
+    private float rotationSpeed; // velocidade de rotação (graus por segundo)
 
     public FallingObject(Texture texture, float startX, float startY, float width, float height) {
         super(texture, startX, startY, width, height);
@@ -24,8 +25,12 @@ public class FallingObject extends GameObject {
         active = true;
 
         // Arco aleatório (horizontal e vertical)
-        velocityX = MathUtils.random(-2f, -4f); // indo para a esquerda (traseira do caminhão)
-        velocityY = MathUtils.random(2.5f, 4f);  // altura inicial do pulo
+        velocityX = MathUtils.random(-2f, -4f); // indo para a esquerda
+        velocityY = MathUtils.random(2.5f, 4f); // altura inicial do pulo
+
+        // Gira em sentido horário ou anti-horário aleatoriamente
+        rotationSpeed = MathUtils.randomSign() * MathUtils.random(90f, 360f);
+        objectSprite.setOriginCenter(); // permite rotação suave no centro
     }
 
     @Override
@@ -35,6 +40,10 @@ public class FallingObject extends GameObject {
         // Movimento parabólico
         velocityY += gravity * delta;
         translate(velocityX * delta, velocityY * delta);
+
+        // Atualiza a rotação
+        float newRotation = objectSprite.getRotation() + rotationSpeed * delta;
+        objectSprite.setRotation(newRotation);
 
         // Caiu no chão → desativa
         if (objectSprite.getY() <= groundY) {
