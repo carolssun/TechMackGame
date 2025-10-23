@@ -30,20 +30,20 @@ public class Player extends GameObject{
         this.standingLeft = texture;
         
         // Carregar frames da animação de correr para direita
-        framesCorridaDireita = new TextureRegion[15];
-        for (int i = 0; i < 15; i++) {
+        framesCorridaDireita = new TextureRegion[13];
+        for (int i = 0; i < 13; i++) {
                 Texture t = new Texture("RunRight" + (i+1) + ".png");
             framesCorridaDireita[i] = new TextureRegion(t);
         }
-        runAnimationRight = new Animation<>(0.05f, framesCorridaDireita);
+        runAnimationRight = new Animation<>(0.1f, framesCorridaDireita);
         
         // Para a esquerda, vamos usar os mesmos frames da direita mas invertidos horizontalmente
-        TextureRegion[] framesEsquerda = new TextureRegion[15];
-        for (int i = 0; i < 15; i++) {
+        TextureRegion[] framesEsquerda = new TextureRegion[13];
+        for (int i = 0; i < 13; i++) {
             framesEsquerda[i] = new TextureRegion(framesCorridaDireita[i]);
             framesEsquerda[i].flip(true, false); // Inverte horizontalmente
         }
-        runAnimationLeft = new Animation<>(0.05f, framesEsquerda);
+        runAnimationLeft = new Animation<>(0.1f, framesEsquerda);
     }
 
     @Override

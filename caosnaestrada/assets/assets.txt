@@ -4,8 +4,6 @@ RunRight10.png
 RunRight11.png
 RunRight12.png
 RunRight13.png
-RunRight14.png
-RunRight15.png
 RunRight2.png
 RunRight3.png
 RunRight4.png
